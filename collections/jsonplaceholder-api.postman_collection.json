@@ -1,1 +1,608 @@
-{"event":[{"listen":"prerequest","script":{"exec":["// Collection-level pre-request script.","// Adds a timestamp header to every request so runs can be traced.","var timestamp = new Date().toISOString();","pm.request.headers.upsert({ key: 'X-Request-Timestamp', value: timestamp });"],"type":"text/javascript"}}],"info":{"_postman_id":"jsonplaceholder-api-collection","description":"API tests for https://jsonplaceholder.typicode.com — a free demo API. Covers posts, users and comments, plus negative cases. Run with Postman or Newman.","name":"JSONPlaceholder API","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},"item":[{"item":[{"event":[{"listen":"test","script":{"exec":["pm.test('Status code is 200', function () {","    pm.response.to.have.status(200);","});","","pm.test('Response time is under 2000ms', function () {","    pm.expect(pm.response.responseTime).to.be.below(2000);","});","","pm.test('Response is a non-empty array of posts', function () {","    var jsonData = pm.response.json();","    pm.expect(jsonData).to.be.an('array');","    pm.expect(jsonData.length).to.be.above(0);","});","","pm.test('Each post has id, userId, title and body', function () {","    var jsonData = pm.response.json();","    jsonData.forEach(function (post) {","        pm.expect(post).to.have.property('id');","        pm.expect(post).to.have.property('userId');","        pm.expect(post).to.have.property('title');","        pm.expect(post).to.have.property('body');","        pm.expect(post.title).to.be.a('string').and.not.empty;","    });","});"],"type":"text/javascript"}}],"name":"Get all posts","request":{"header":[],"method":"GET","url":{"host":["{{baseUrl}}"],"path":["posts"],"raw":"{{baseUrl}}/posts"}}},{"event":[{"listen":"test","script":{"exec":["pm.test('Status code is 200', function () {","    pm.response.to.have.status(200);","});","","pm.test('Response time is under 2000ms', function () {","    pm.expect(pm.response.responseTime).to.be.below(2000);","});","","pm.test('Post has id 1 and expected fields', function () {","    var jsonData = pm.response.json();","    pm.expect(jsonData.id).to.eql(1);","    pm.expect(jsonData).to.have.property('userId');","    pm.expect(jsonData).to.have.property('title');","    pm.expect(jsonData).to.have.property('body');","    pm.expect(jsonData.title).to.be.a('string').and.not.empty;","    pm.expect(jsonData.body).to.be.a('string').and.not.empty;","});"],"type":"text/javascript"}}],"name":"Get single post","request":{"header":[],"method":"GET","url":{"host":["{{baseUrl}}"],"path":["posts","1"],"raw":"{{baseUrl}}/posts/1"}}},{"event":[{"listen":"test","script":{"exec":["pm.test('Status code is 201', function () {","    pm.response.to.have.status(201);","});","","pm.test('Response time is under 2000ms', function () {","    pm.expect(pm.response.responseTime).to.be.below(2000);","});","","pm.test('Created post echoes the sent fields and has an id', function () {","    var jsonData = pm.response.json();","    pm.expect(jsonData).to.have.property('id');","    pm.expect(jsonData.title).to.eql('Test post from Postman');","    pm.expect(jsonData.body).to.eql('Created while testing the JSONPlaceholder API.');","    pm.expect(jsonData.userId).to.eql(1);","});"],"type":"text/javascript"}}],"name":"Create post","request":{"body":{"mode":"raw","options":{"raw":{"language":"json"}},"raw":"{\n  \"title\": \"Test post from Postman\",\n  \"body\": \"Created while testing the JSONPlaceholder API.\",\n  \"userId\": 1\n}"},"header":[{"key":"Content-Type","value":"application/json"}],"method":"POST","url":{"host":["{{baseUrl}}"],"path":["posts"],"raw":"{{baseUrl}}/posts"}}},{"event":[{"listen":"test","script":{"exec":["pm.test('Status code is 200', function () {","    pm.response.to.have.status(200);","});","","pm.test('Response time is under 2000ms', function () {","    pm.expect(pm.response.responseTime).to.be.below(2000);","});","","pm.test('Updated post has id 1 and the new title', function () {","    var jsonData = pm.response.json();","    pm.expect(jsonData.id).to.eql(1);","    pm.expect(jsonData.title).to.eql('Updated post title');","    pm.expect(jsonData.body).to.eql('Updated body text.');","    pm.expect(jsonData.userId).to.eql(1);","});"],"type":"text/javascript"}}],"name":"Update post (PUT)","request":{"body":{"mode":"raw","options":{"raw":{"language":"json"}},"raw":"{\n  \"id\": 1,\n  \"title\": \"Updated post title\",\n  \"body\": \"Updated body text.\",\n  \"userId\": 1\n}"},"header":[{"key":"Content-Type","value":"application/json"}],"method":"PUT","url":{"host":["{{baseUrl}}"],"path":["posts","1"],"raw":"{{baseUrl}}/posts/1"}}},{"event":[{"listen":"test","script":{"exec":["pm.test('Status code is 200', function () {","    pm.response.to.have.status(200);","});","","pm.test('Response time is under 2000ms', function () {","    pm.expect(pm.response.responseTime).to.be.below(2000);","});","","pm.test('Patched title is returned', function () {","    var jsonData = pm.response.json();","    pm.expect(jsonData.id).to.eql(1);","    pm.expect(jsonData.title).to.eql('Patched post title');","});"],"type":"text/javascript"}}],"name":"Partially update post (PATCH)","request":{"body":{"mode":"raw","options":{"raw":{"language":"json"}},"raw":"{\n  \"title\": \"Patched post title\"\n}"},"header":[{"key":"Content-Type","value":"application/json"}],"method":"PATCH","url":{"host":["{{baseUrl}}"],"path":["posts","1"],"raw":"{{baseUrl}}/posts/1"}}},{"event":[{"listen":"test","script":{"exec":["pm.test('Status code is 200 or 204', function () {","    pm.expect(pm.response.code).to.be.oneOf([200, 204]);","});","","pm.test('Response time is under 2000ms', function () {","    pm.expect(pm.response.responseTime).to.be.below(2000);","});","","pm.test('Response body is empty or an empty object', function () {","    var body = pm.response.text();","    pm.expect(body === '' || body === '{}').to.be.true;","});"],"type":"text/javascript"}}],"name":"Delete post","request":{"header":[],"method":"DELETE","url":{"host":["{{baseUrl}}"],"path":["posts","1"],"raw":"{{baseUrl}}/posts/1"}}}],"name":"Posts"},{"item":[{"event":[{"listen":"test","script":{"exec":["pm.test('Status code is 200', function () {","    pm.response.to.have.status(200);","});","","pm.test('Response time is under 2000ms', function () {","    pm.expect(pm.response.responseTime).to.be.below(2000);","});","","pm.test('Response is a non-empty array of users', function () {","    var jsonData = pm.response.json();","    pm.expect(jsonData).to.be.an('array');","    pm.expect(jsonData.length).to.be.above(0);","});","","pm.test('Each user has id, name, username and a valid-looking email', function () {","    var jsonData = pm.response.json();","    jsonData.forEach(function (user) {","        pm.expect(user).to.have.property('id');","        pm.expect(user).to.have.property('name');","        pm.expect(user).to.have.property('username');","        pm.expect(user).to.have.property('email');","        pm.expect(user.email).to.be.a('string').and.to.include('@');","    });","});"],"type":"text/javascript"}}],"name":"Get all users","request":{"header":[],"method":"GET","url":{"host":["{{baseUrl}}"],"path":["users"],"raw":"{{baseUrl}}/users"}}}],"name":"Users"},{"item":[{"event":[{"listen":"test","script":{"exec":["pm.test('Status code is 200', function () {","    pm.response.to.have.status(200);","});","","pm.test('Response time is under 2000ms', function () {","    pm.expect(pm.response.responseTime).to.be.below(2000);","});","","pm.test('Response is a non-empty array of comments', function () {","    var jsonData = pm.response.json();","    pm.expect(jsonData).to.be.an('array');","    pm.expect(jsonData.length).to.be.above(0);","});","","pm.test('Every comment belongs to post 1 and has name, email and body', function () {","    var jsonData = pm.response.json();","    jsonData.forEach(function (comment) {","        pm.expect(comment.postId).to.eql(1);","        pm.expect(comment).to.have.property('id');","        pm.expect(comment).to.have.property('name');","        pm.expect(comment).to.have.property('email');","        pm.expect(comment).to.have.property('body');","        pm.expect(comment.email).to.be.a('string').and.to.include('@');","    });","});"],"type":"text/javascript"}}],"name":"Get comments for post 1","request":{"header":[],"method":"GET","url":{"host":["{{baseUrl}}"],"path":["comments"],"query":[{"key":"postId","value":"1"}],"raw":"{{baseUrl}}/comments?postId=1"}}}],"name":"Comments"},{"item":[{"event":[{"listen":"test","script":{"exec":["pm.test('Status code is 404', function () {","    pm.response.to.have.status(404);","});","","pm.test('Response time is under 2000ms', function () {","    pm.expect(pm.response.responseTime).to.be.below(2000);","});","","pm.test('Response body is empty or an empty object', function () {","    var body = pm.response.text();","    pm.expect(body === '' || body === '{}').to.be.true;","});"],"type":"text/javascript"}}],"name":"Get non-existent post","request":{"header":[],"method":"GET","url":{"host":["{{baseUrl}}"],"path":["posts","999999"],"raw":"{{baseUrl}}/posts/999999"}}},{"event":[{"listen":"test","script":{"exec":["pm.test('Status code is 404', function () {","    pm.response.to.have.status(404);","});","","pm.test('Response time is under 2000ms', function () {","    pm.expect(pm.response.responseTime).to.be.below(2000);","});","","pm.test('Response body is empty or an empty object', function () {","    var body = pm.response.text();","    pm.expect(body === '' || body === '{}').to.be.true;","});"],"type":"text/javascript"}}],"name":"Get invalid endpoint","request":{"header":[],"method":"GET","url":{"host":["{{baseUrl}}"],"path":["invalid-endpoint"],"raw":"{{baseUrl}}/invalid-endpoint"}}}],"name":"Negative Cases"}],"variable":[{"key":"baseUrl","value":"https://jsonplaceholder.typicode.com"}]}
+{
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// Collection-level pre-request script.",
+          "// Adds a timestamp header to every request so runs can be traced.",
+          "var timestamp = new Date().toISOString();",
+          "pm.request.headers.upsert({ key: 'X-Request-Timestamp', value: timestamp });"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "info": {
+    "_postman_id": "jsonplaceholder-api-collection",
+    "description": "API tests for the JSONPlaceholder demo API - a free demo API. Covers posts, users and comments, plus negative cases. Run with Postman or Newman. All request URLs use the {{baseUrl}} variable; ids, payload text and the response-time limit come from collection / environment / data-file variables (see ARCHITECTURE.md). No hard-coded host, id or timeout in any request or test script.",
+    "name": "JSONPlaceholder API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "item": [
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('Response is a non-empty array of posts', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    pm.expect(jsonData.length).to.be.above(0);",
+                  "});",
+                  "",
+                  "pm.test('Each post has id, userId, title and body', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    jsonData.forEach(function (post) {",
+                  "        pm.expect(post).to.have.property('id');",
+                  "        pm.expect(post).to.have.property('userId');",
+                  "        pm.expect(post).to.have.property('title');",
+                  "        pm.expect(post).to.have.property('body');",
+                  "        pm.expect(post.title).to.be.a('string').and.not.empty;",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Get all posts",
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ],
+              "raw": "{{baseUrl}}/posts"
+            }
+          }
+        },
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('Post has id 1 and expected fields', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eql(postId);",
+                  "    pm.expect(jsonData).to.have.property('userId');",
+                  "    pm.expect(jsonData).to.have.property('title');",
+                  "    pm.expect(jsonData).to.have.property('body');",
+                  "    pm.expect(jsonData.title).to.be.a('string').and.not.empty;",
+                  "    pm.expect(jsonData.body).to.be.a('string').and.not.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Get single post",
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "{{postId}}"
+              ],
+              "raw": "{{baseUrl}}/posts/{{postId}}"
+            }
+          }
+        },
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "",
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('Created post echoes the sent fields and has an id', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.title).to.eql(pm.variables.get('newPostTitle'));",
+                  "    pm.expect(jsonData.body).to.eql(pm.variables.get('newPostBody'));",
+                  "    pm.expect(jsonData.userId).to.eql(userId);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Create post",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"title\": \"{{newPostTitle}}\",\n  \"body\": \"{{newPostBody}}\",\n  \"userId\": {{userId}}\n}"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ],
+              "raw": "{{baseUrl}}/posts"
+            }
+          }
+        },
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('Updated post has id 1 and the new title', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eql(postId);",
+                  "    pm.expect(jsonData.title).to.eql(pm.variables.get('updatedPostTitle'));",
+                  "    pm.expect(jsonData.body).to.eql(pm.variables.get('updatedPostBody'));",
+                  "    pm.expect(jsonData.userId).to.eql(userId);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Update post (PUT)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"id\": {{postId}},\n  \"title\": \"{{updatedPostTitle}}\",\n  \"body\": \"{{updatedPostBody}}\",\n  \"userId\": {{userId}}\n}"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "{{postId}}"
+              ],
+              "raw": "{{baseUrl}}/posts/{{postId}}"
+            }
+          }
+        },
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('Patched title is returned', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eql(postId);",
+                  "    pm.expect(jsonData.title).to.eql(pm.variables.get('patchedPostTitle'));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Partially update post (PATCH)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"title\": \"{{patchedPostTitle}}\"\n}"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "{{postId}}"
+              ],
+              "raw": "{{baseUrl}}/posts/{{postId}}"
+            }
+          }
+        },
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "",
+                  "pm.test('Status code is 200 or 204', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('Response body is empty or an empty object', function () {",
+                  "    var body = pm.response.text();",
+                  "    pm.expect(body === '' || body === '{}').to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Delete post",
+          "request": {
+            "header": [],
+            "method": "DELETE",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "{{postId}}"
+              ],
+              "raw": "{{baseUrl}}/posts/{{postId}}"
+            }
+          }
+        }
+      ],
+      "name": "Posts"
+    },
+    {
+      "item": [
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('Response is a non-empty array of users', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    pm.expect(jsonData.length).to.be.above(0);",
+                  "});",
+                  "",
+                  "pm.test('Each user has id, name, username and a valid-looking email', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    jsonData.forEach(function (user) {",
+                  "        pm.expect(user).to.have.property('id');",
+                  "        pm.expect(user).to.have.property('name');",
+                  "        pm.expect(user).to.have.property('username');",
+                  "        pm.expect(user).to.have.property('email');",
+                  "        pm.expect(user.email).to.be.a('string').and.to.include('@');",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Get all users",
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ],
+              "raw": "{{baseUrl}}/users"
+            }
+          }
+        }
+      ],
+      "name": "Users"
+    },
+    {
+      "item": [
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('Response is a non-empty array of comments', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    pm.expect(jsonData.length).to.be.above(0);",
+                  "});",
+                  "",
+                  "pm.test('Every comment belongs to post 1 and has name, email and body', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    jsonData.forEach(function (comment) {",
+                  "        pm.expect(comment.postId).to.eql(postId);",
+                  "        pm.expect(comment).to.have.property('id');",
+                  "        pm.expect(comment).to.have.property('name');",
+                  "        pm.expect(comment).to.have.property('email');",
+                  "        pm.expect(comment).to.have.property('body');",
+                  "        pm.expect(comment.email).to.be.a('string').and.to.include('@');",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Get comments for post 1",
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "comments"
+              ],
+              "query": [
+                {
+                  "key": "postId",
+                  "value": "{{postId}}"
+                }
+              ],
+              "raw": "{{baseUrl}}/comments?postId={{postId}}"
+            }
+          }
+        }
+      ],
+      "name": "Comments"
+    },
+    {
+      "item": [
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "",
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('Response body is empty or an empty object', function () {",
+                  "    var body = pm.response.text();",
+                  "    pm.expect(body === '' || body === '{}').to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Get non-existent post",
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "{{nonExistentPostId}}"
+              ],
+              "raw": "{{baseUrl}}/posts/{{nonExistentPostId}}"
+            }
+          }
+        },
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "",
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('Response body is empty or an empty object', function () {",
+                  "    var body = pm.response.text();",
+                  "    pm.expect(body === '' || body === '{}').to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Get invalid endpoint",
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "invalid-endpoint"
+              ],
+              "raw": "{{baseUrl}}/invalid-endpoint"
+            }
+          }
+        }
+      ],
+      "name": "Negative Cases"
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://jsonplaceholder.typicode.com"
+    },
+    {
+      "key": "postId",
+      "value": "1"
+    },
+    {
+      "key": "userId",
+      "value": "1"
+    },
+    {
+      "key": "nonExistentPostId",
+      "value": "999999"
+    },
+    {
+      "key": "maxResponseTimeMs",
+      "value": "2000"
+    },
+    {
+      "key": "newPostTitle",
+      "value": "Test post from Postman"
+    },
+    {
+      "key": "newPostBody",
+      "value": "Created while testing the JSONPlaceholder API."
+    },
+    {
+      "key": "updatedPostTitle",
+      "value": "Updated post title"
+    },
+    {
+      "key": "updatedPostBody",
+      "value": "Updated body text."
+    },
+    {
+      "key": "patchedPostTitle",
+      "value": "Patched post title"
+    }
+  ]
+}

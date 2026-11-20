@@ -1,0 +1,31 @@
+{
+    "collection": "collections/jsonplaceholder-api.postman_collection.json",
+    "defaultDataFile": "test-data/posts.json",
+    "defaultEnvironment": "dev",
+    "delayRequestMs": 0,
+    "environments": {
+        "dev": "environments/dev.postman_environment.json",
+        "prod": "environments/prod.postman_environment.json"
+    },
+    "htmlReport": "reports/report.html",
+    "iterationCount": 1,
+    "jsonReport": "reports/report.json",
+    "notes": [
+        "This file is the single source of defaults for scripts/run-newman.js.",
+        "Every value here can be overridden without editing this file:",
+        "CLI flags win over environment variables, which win over this file.",
+        "NEWMAN_ENV picks dev or prod (environments.<name> above).",
+        "BASE_URL overrides the baseUrl variable from the environment file.",
+        "NEWMAN_DATA_FILE overrides defaultDataFile; empty means no data file.",
+        "NEWMAN_ITERATIONS, NEWMAN_DELAY_REQUEST_MS, NEWMAN_TIMEOUT_REQUEST_MS,",
+        "NEWMAN_TIMEOUT_SCRIPT_MS, NEWMAN_REPORTERS and NEWMAN_HTML_REPORT",
+        "override their matching values here. See .env.example and docs/SETUP.md."
+    ],
+    "reporters": [
+        "cli",
+        "html",
+        "json"
+    ],
+    "timeoutRequestMs": 10000,
+    "timeoutScriptMs": 5000
+}
