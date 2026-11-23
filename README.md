@@ -8,13 +8,14 @@ Postman collection and Newman runner for the [JSONPlaceholder](https://jsonplace
 - Users: get all
 - Comments: get comments for post 1 (`?postId={{postId}}`)
 - Negative cases: get a post that does not exist (`/posts/{{nonExistentPostId}}`), get an invalid endpoint
+- Auth (`collections/auth-negative.postman_collection.json`, 7 requests, 21 assertions): basic auth valid / wrong password and bearer token valid / missing against httpbin, plus create post missing title and body (documents that the fake API accepts it with 201), non-existent post and invalid endpoint
 
 Each request has test scripts that check the status code, response time (against the `maxResponseTimeMs` variable, default 2000 ms), and the JSON fields returned. A collection-level pre-request script adds an `X-Request-Timestamp` header to every request. No URL, id, payload value or timeout is hard-coded in a request or test script: they all come from collection, environment or data-file variables (see `ARCHITECTURE.md`).
 
 ## Folder tree
 
 ```text
-├── collections/    the Postman collection (10 requests, 33 assertions)
+├── collections/    two Postman collections (10 + 7 requests, 33 + 21 assertions)
 ├── config/         newman.config.json — timeouts, reporters, defaults
 ├── docs/           SETUP.md, TESTING.md
 ├── environments/   dev + prod (both point at the same demo API)
@@ -35,11 +36,12 @@ Details: `docs/SETUP.md`.
 ## Run
 
 ```bash
-npm test              # dev environment, terminal + HTML + JSON reports
+npm test              # both collections, dev environment, terminal + HTML + JSON reports
 npm run test:html     # same, explicit
-npm run test:prod     # prod environment
+npm run test:prod     # both collections, prod environment
 npm run test:data     # data-driven run with test-data/posts.json (3 rows)
 npm run test:csv      # data-driven run with test-data/posts.csv (3 rows)
+npm run test:auth     # auth collection only
 ```
 
 Or directly:
@@ -75,5 +77,5 @@ Honest status, verified 2026-11-20:
 - All JSON files in the repo parse cleanly (`python3 -m json.tool`): collection, both environments, `config/newman.config.json`, `test-data/posts.json`, `test-data/users.json`, `package.json`.
 - `scripts/run-newman.sh` passes `bash -n` (syntax check).
 - `scripts/run-newman.js` passes `node --check`.
-- Collection structure confirmed: 10 requests, 33 `pm.test` assertions; no hard-coded host, id or timeout remains in any request URL, body or test script (values live in collection/environment/data-file variables).
-- **Newman was not run.** Newman is not installed in this environment (`node_modules/` does not exist) and the collection has never been executed, so there are no pass/fail numbers to report. Run it yourself (`npm install && npm test`) and read `reports/report.html` for the current state. See `docs/TESTING.md`.
+- Collection structure confirmed: 10 requests, 33 `pm.test` assertions in the main collection; 7 requests, 21 assertions in the auth collection; no hard-coded host, id, credential or timeout remains in any request URL, body or test script (values live in collection/environment/data-file variables).
+- **Newman was not run.** Newman is not installed in this environment (`node_modules/` does not exist) and neither collection has ever been executed, so there are no pass/fail numbers to report. Run it yourself (`npm install && npm test`) and read `reports/report.html` and `reports/report-auth.html` for the current state. See `docs/TESTING.md`.

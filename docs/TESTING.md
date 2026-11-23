@@ -7,7 +7,7 @@ a free demo API. It does not save changes, so POST, PUT, PATCH and
 DELETE return fake success responses. This repo tests the contract
 (status, shape, echoed fields), not persistence.
 
-The collection has 10 requests in 4 folders, 33 assertions in total:
+The main collection has 10 requests in 4 folders, 33 assertions in total:
 
 | Folder | Requests | Checks |
 | --- | --- | --- |
@@ -20,6 +20,31 @@ Every request also checks response time against `maxResponseTimeMs`
 (default 2000 ms), and a collection-level pre-request script adds an
 `X-Request-Timestamp` header to every request so runs can be traced.
 
+## Second collection: auth and negative cases
+
+`collections/auth-negative.postman_collection.json` has 7 requests
+in 2 folders, 21 assertions in total:
+
+| Folder | Requests | Checks |
+| --- | --- | --- |
+| Auth | Basic auth valid credentials, Basic auth wrong password, Bearer token valid, Bearer token missing | Status (200 for valid, 401 for wrong/missing), response time, `authenticated` flag and echoed user/token on the valid calls |
+| Negative Cases | Create post missing title and body, Get non-existent post, Get invalid endpoint | Status, response time, empty body on the 404s |
+
+Auth runs against httpbin (`{{httpbinBaseUrl}}`, the documented demo
+user `user` / `passwd` and a dummy bearer token from
+`test-data/auth.json`); the negative cases run against JSONPlaceholder.
+The missing-fields request documents real behaviour: JSONPlaceholder
+is a fake API with no validation, so it accepts the post with 201 and
+an id, and the test asserts the title is absent rather than expecting
+a 400 that never comes.
+
+Running both collections (the default) is 17 requests and
+54 assertions. Each collection has its own default iteration data
+file in `config/newman.config.json` (`dataFiles`): `test-data/posts.json`
+for the main collection, `test-data/auth.json` for the auth collection.
+`test-data/negative.json` (2 rows) is the data file for the negative
+cases when you run the auth collection with `--data test-data/negative.json`.
+
 No test result is claimed in this repo: the collection has only ever
 been JSON-validated, never executed (see "Current status" below).
 
@@ -27,12 +52,18 @@ been JSON-validated, never executed (see "Current status" below).
 
 ```bash
 npm install   # first time only
-npm test              # dev environment, terminal output only
-npm run test:html     # dev environment, plus HTML + JSON reports
-npm run test:prod     # prod environment
+npm test              # both collections, dev environment, terminal output only
+npm run test:html     # both collections, plus HTML + JSON reports
+npm run test:prod     # both collections, prod environment
 npm run test:data     # data-driven run, test-data/posts.json (3 rows)
 npm run test:csv      # data-driven run, test-data/posts.csv (3 rows)
+npm run test:auth     # auth collection only, test-data/auth.json (1 row)
 ```
+
+`npm test` runs both collections in order. The main collection
+writes `reports/report.html` and `reports/report.json`; the auth
+collection writes `reports/report-auth.html` and
+`reports/report-auth.json`.
 
 Direct runner with options:
 
@@ -76,7 +107,9 @@ assertion fails or Newman errors, so CI can fail the build on a red run.
 
 - All JSON files in this repo parse cleanly (validated 2026-11-20).
 - Shell script syntax checks pass (`bash -n`).
-- The collection was **never executed**: Newman is not installed in
+- The collections were **never executed**: Newman is not installed in
   this environment and no run has taken place, so there are no
   pass/fail numbers to report. Run it yourself and read
-  `reports/report.html` for the current state.
+  `reports/report.html` (and `reports/report-auth.html`) for the
+  current state. The auth collection is in the same state: written
+  and JSON-validated only, never run.

@@ -1,5 +1,13 @@
 {
     "collection": "collections/jsonplaceholder-api.postman_collection.json",
+    "collections": [
+        "collections/jsonplaceholder-api.postman_collection.json",
+        "collections/auth-negative.postman_collection.json"
+    ],
+    "dataFiles": {
+        "auth-negative": "test-data/auth.json",
+        "jsonplaceholder-api": "test-data/posts.json"
+    },
     "defaultDataFile": "test-data/posts.json",
     "defaultEnvironment": "dev",
     "delayRequestMs": 0,
@@ -12,6 +20,9 @@
     "jsonReport": "reports/report.json",
     "notes": [
         "This file is the single source of defaults for scripts/run-newman.js.",
+        "collections is the list the runner runs, in order, unless --collection picks one.",
+        "dataFiles maps a collection file name (without .postman_collection.json)",
+        "to its default iteration data file; --data / NEWMAN_DATA_FILE wins for all.",
         "Every value here can be overridden without editing this file:",
         "CLI flags win over environment variables, which win over this file.",
         "NEWMAN_ENV picks dev or prod (environments.<name> above).",
