@@ -2,11 +2,13 @@
     "collection": "collections/jsonplaceholder-api.postman_collection.json",
     "collections": [
         "collections/jsonplaceholder-api.postman_collection.json",
-        "collections/auth-negative.postman_collection.json"
+        "collections/auth-negative.postman_collection.json",
+        "collections/schema-validation.postman_collection.json"
     ],
     "dataFiles": {
         "auth-negative": "test-data/auth.json",
-        "jsonplaceholder-api": "test-data/posts.json"
+        "jsonplaceholder-api": "test-data/posts.json",
+        "schema-validation": "test-data/posts.csv"
     },
     "defaultDataFile": "test-data/posts.json",
     "defaultEnvironment": "dev",
@@ -23,6 +25,8 @@
         "collections is the list the runner runs, in order, unless --collection picks one.",
         "dataFiles maps a collection file name (without .postman_collection.json)",
         "to its default iteration data file; --data / NEWMAN_DATA_FILE wins for all.",
+        "schema-validation defaults to test-data/posts.csv (3 rows), so the",
+        "schema collection runs once per CSV row (5 requests x 3 rows).",
         "Every value here can be overridden without editing this file:",
         "CLI flags win over environment variables, which win over this file.",
         "NEWMAN_ENV picks dev or prod (environments.<name> above).",

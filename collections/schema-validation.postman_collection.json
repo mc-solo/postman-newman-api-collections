@@ -1,0 +1,369 @@
+{
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// Collection-level pre-request script.",
+          "// Adds a timestamp header to every request so runs can be traced.",
+          "var timestamp = new Date().toISOString();",
+          "pm.request.headers.upsert({ key: 'X-Request-Timestamp', value: timestamp });"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "info": {
+    "_postman_id": "schema-validation-collection",
+    "description": "Response schema validation for the JSONPlaceholder demo API: posts and users endpoints. Each request has two schema checks: a tv4 JSON-schema validation against the postSchema / userSchema collection variables, and an explicit required-fields-and-types check. The schemas live in the collection variables so they travel with the collection; no schema, host, id or timeout is hard-coded in a request or test script. Default iteration data is test-data/posts.csv (3 rows), so the collection runs once per CSV row. Run with Postman or Newman. See docs/TESTING.md.",
+    "name": "Schema Validation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "item": [
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "var postSchema = JSON.parse(pm.variables.get('postSchema'));",
+                  "var userSchema = JSON.parse(pm.variables.get('userSchema'));",
+                  "",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('Single post matches the post schema (tv4)', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    var result = tv4.validateResult(jsonData, postSchema);",
+                  "    pm.expect(result.valid, JSON.stringify(result.error)).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Single post has all required fields with the right types', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eql(postId);",
+                  "    pm.expect(jsonData.userId).to.be.a('number');",
+                  "    pm.expect(jsonData.title).to.be.a('string').and.not.empty;",
+                  "    pm.expect(jsonData.body).to.be.a('string').and.not.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Get single post (schema)",
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "{{postId}}"
+              ],
+              "raw": "{{baseUrl}}/posts/{{postId}}"
+            }
+          }
+        },
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "var postSchema = JSON.parse(pm.variables.get('postSchema'));",
+                  "var userSchema = JSON.parse(pm.variables.get('userSchema'));",
+                  "",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('All posts match the post schema (tv4)', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    var schema = { type: 'array', items: postSchema };",
+                  "    var result = tv4.validateResult(jsonData, schema);",
+                  "    pm.expect(result.valid, JSON.stringify(result.error)).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Every post has all required fields with the right types', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array').and.not.empty;",
+                  "    jsonData.forEach(function (post) {",
+                  "        pm.expect(post.id).to.be.a('number');",
+                  "        pm.expect(post.userId).to.be.a('number');",
+                  "        pm.expect(post.title).to.be.a('string').and.not.empty;",
+                  "        pm.expect(post.body).to.be.a('string').and.not.empty;",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Get all posts (schema)",
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ],
+              "raw": "{{baseUrl}}/posts"
+            }
+          }
+        },
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "var postSchema = JSON.parse(pm.variables.get('postSchema'));",
+                  "var userSchema = JSON.parse(pm.variables.get('userSchema'));",
+                  "",
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('Created post matches the post schema (tv4)', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    var result = tv4.validateResult(jsonData, postSchema);",
+                  "    pm.expect(result.valid, JSON.stringify(result.error)).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Created post has all required fields with the right types and echoes the sent title and body', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.userId).to.eql(userId);",
+                  "    pm.expect(jsonData.title).to.eql(pm.variables.get('newPostTitle'));",
+                  "    pm.expect(jsonData.body).to.eql(pm.variables.get('newPostBody'));",
+                  "    pm.expect(jsonData.title).to.be.a('string').and.not.empty;",
+                  "    pm.expect(jsonData.body).to.be.a('string').and.not.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Create post (schema)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"title\": \"{{newPostTitle}}\",\n  \"body\": \"{{newPostBody}}\",\n  \"userId\": {{userId}}\n}"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ],
+              "raw": "{{baseUrl}}/posts"
+            }
+          }
+        }
+      ],
+      "name": "Posts Schema"
+    },
+    {
+      "item": [
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "var postSchema = JSON.parse(pm.variables.get('postSchema'));",
+                  "var userSchema = JSON.parse(pm.variables.get('userSchema'));",
+                  "",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('Single user matches the user schema (tv4)', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    var result = tv4.validateResult(jsonData, userSchema);",
+                  "    pm.expect(result.valid, JSON.stringify(result.error)).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Single user has all required fields with the right types', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eql(userId);",
+                  "    pm.expect(jsonData.name).to.be.a('string').and.not.empty;",
+                  "    pm.expect(jsonData.username).to.be.a('string').and.not.empty;",
+                  "    pm.expect(jsonData.email).to.be.a('string').and.to.include('@');",
+                  "    pm.expect(jsonData.address).to.be.an('object');",
+                  "    pm.expect(jsonData.address.street).to.be.a('string');",
+                  "    pm.expect(jsonData.address.city).to.be.a('string');",
+                  "    pm.expect(jsonData.address.zipcode).to.be.a('string');",
+                  "    pm.expect(jsonData.phone).to.be.a('string');",
+                  "    pm.expect(jsonData.website).to.be.a('string');",
+                  "    pm.expect(jsonData.company).to.be.an('object');",
+                  "    pm.expect(jsonData.company.name).to.be.a('string');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Get single user (schema)",
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{userId}}"
+              ],
+              "raw": "{{baseUrl}}/users/{{userId}}"
+            }
+          }
+        },
+        {
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var maxResponseTimeMs = Number(pm.variables.get('maxResponseTimeMs')) || 2000;",
+                  "var postId = Number(pm.variables.get('postId')) || 1;",
+                  "var userId = Number(pm.variables.get('userId')) || 1;",
+                  "var postSchema = JSON.parse(pm.variables.get('postSchema'));",
+                  "var userSchema = JSON.parse(pm.variables.get('userSchema'));",
+                  "",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under ' + maxResponseTimeMs + 'ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(maxResponseTimeMs);",
+                  "});",
+                  "",
+                  "pm.test('All users match the user schema (tv4)', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    var schema = { type: 'array', items: userSchema };",
+                  "    var result = tv4.validateResult(jsonData, schema);",
+                  "    pm.expect(result.valid, JSON.stringify(result.error)).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Every user has all required fields with the right types', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array').and.not.empty;",
+                  "    jsonData.forEach(function (user) {",
+                  "        pm.expect(user.id).to.be.a('number');",
+                  "        pm.expect(user.name).to.be.a('string').and.not.empty;",
+                  "        pm.expect(user.username).to.be.a('string').and.not.empty;",
+                  "        pm.expect(user.email).to.be.a('string').and.to.include('@');",
+                  "        pm.expect(user.address).to.be.an('object');",
+                  "        pm.expect(user.company).to.be.an('object');",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Get all users (schema)",
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ],
+              "raw": "{{baseUrl}}/users"
+            }
+          }
+        }
+      ],
+      "name": "Users Schema"
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://jsonplaceholder.typicode.com"
+    },
+    {
+      "key": "postId",
+      "value": "1"
+    },
+    {
+      "key": "userId",
+      "value": "1"
+    },
+    {
+      "key": "maxResponseTimeMs",
+      "value": "2000"
+    },
+    {
+      "key": "newPostTitle",
+      "value": "Test post from Postman"
+    },
+    {
+      "key": "newPostBody",
+      "value": "Created while testing the JSONPlaceholder API."
+    },
+    {
+      "key": "postSchema",
+      "value": "{\"type\":\"object\",\"required\":[\"id\",\"userId\",\"title\",\"body\"],\"properties\":{\"id\":{\"type\":\"integer\"},\"userId\":{\"type\":\"integer\"},\"title\":{\"type\":\"string\"},\"body\":{\"type\":\"string\"}},\"additionalProperties\":true}"
+    },
+    {
+      "key": "userSchema",
+      "value": "{\"type\":\"object\",\"required\":[\"id\",\"name\",\"username\",\"email\",\"address\",\"phone\",\"website\",\"company\"],\"properties\":{\"id\":{\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"username\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"},\"address\":{\"type\":\"object\",\"required\":[\"street\",\"suite\",\"city\",\"zipcode\",\"geo\"],\"properties\":{\"street\":{\"type\":\"string\"},\"suite\":{\"type\":\"string\"},\"city\":{\"type\":\"string\"},\"zipcode\":{\"type\":\"string\"},\"geo\":{\"type\":\"object\",\"required\":[\"lat\",\"lng\"],\"properties\":{\"lat\":{\"type\":\"string\"},\"lng\":{\"type\":\"string\"}}}}},\"phone\":{\"type\":\"string\"},\"website\":{\"type\":\"string\"},\"company\":{\"type\":\"object\",\"required\":[\"name\",\"catchPhrase\",\"bs\"],\"properties\":{\"name\":{\"type\":\"string\"},\"catchPhrase\":{\"type\":\"string\"},\"bs\":{\"type\":\"string\"}}}},\"additionalProperties\":true}"
+    }
+  ]
+}

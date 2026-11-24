@@ -2,9 +2,12 @@
 /**
  * Run the Postman collections with Newman.
  *
- * By default it runs BOTH collections in order:
+ * By default it runs all THREE collections in order:
  *   1. collections/jsonplaceholder-api.postman_collection.json
  *   2. collections/auth-negative.postman_collection.json
+ *   3. collections/schema-validation.postman_collection.json
+ *      (data-driven from test-data/posts.csv by default, see
+ *      config/newman.config.json dataFiles)
  * Use --collection <file> to run only one of them.
  *
  * Single source of defaults: config/newman.config.json
@@ -24,8 +27,10 @@
  *
  * Reports: the first collection writes reports/report.html and
  * reports/report.json; the second writes reports/report-auth.html
- * and reports/report-auth.json (suffix from the collection file
- * name, see reportPaths() below).
+ * and reports/report-auth.json; the third writes
+ * reports/report-schema-validation.html and
+ * reports/report-schema-validation.json (suffix from the collection
+ * file name, see reportPaths() below).
  *
  * Requires: Node.js and Newman (`npm install` first). Exits 1 on any
  * failed assertion or Newman error, so CI can fail the build.
@@ -42,7 +47,7 @@ function usage() {
     'Usage: node scripts/run-newman.js [options]',
     '',
     '  --env <dev|prod>          Environment to run against (default: dev)',
-    '  --collection <file>       Run only this collection (default: both collections in config)',
+    '  --collection <file>       Run only this collection (default: all three collections in config)',
     '  --environment <file>      Environment file (default: from --env)',
     '  --data <file>             Iteration data file, JSON or CSV (default: per-collection default in config)',
     '  --reporters <a,b>         Comma-separated reporters (default: cli,html,json)',
@@ -110,7 +115,8 @@ function fail(message) {
 }
 
 /** Report paths for one collection: main collection keeps the plain
- *  names, later collections get a suffix from their file name. */
+ *  names, later collections get a suffix from their file name
+ *  (auth-negative -> -auth, schema-validation -> -schema-validation). */
 function reportPaths(collectionPath, config, args) {
   const stem = path.basename(collectionPath, '.postman_collection.json');
   const suffix = stem === 'jsonplaceholder-api' ? '' : `-${stem.replace('auth-negative', 'auth')}`;

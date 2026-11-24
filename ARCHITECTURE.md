@@ -1,5 +1,18 @@
 # Architecture
 
+## Diagram
+
+```mermaid
+flowchart LR
+    ENV[.env] --> CFG[config/]
+    CFG --> RUN[scripts/run-newman.js]
+    COL[collections/] --> RUN
+    ENVV[environments/] --> RUN
+    TD[test-data/] --> RUN
+    RUN --> NEW[Newman]
+    NEW --> REP[reports/]
+```
+
 Postman collection + Newman runner for the JSONPlaceholder demo API.
 One collection, two environments, one config file, one runner.
 
